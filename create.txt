@@ -56,9 +56,7 @@ CREATE TABLE Robot (
     Status VARCHAR(50),
     Warranty_Expiration DATE,
     Robot_Model_Number VARCHAR(50),
-    DC_Serial_Number VARCHAR(50),
     FOREIGN KEY (Robot_Model_Number) REFERENCES Model(Model_Number),
-    FOREIGN KEY (DC_Serial_Number) REFERENCES Driverless_Car(DC_Serial_Number),
     PRIMARY KEY (Robot_Serial_Number)
 );
 
@@ -176,6 +174,8 @@ CREATE TABLE Rental_Order (
     Fees DECIMAL(10, 2),
     Customer_SSN VARCHAR(9),
     Robot_Serial_Number VARCHAR(50),
+    DC_Serial_Number VARCHAR(50),
+    FOREIGN KEY (DC_Serial_Number) REFERENCES Driverless_Car(DC_Serial_Number),
     FOREIGN KEY (Customer_SSN) REFERENCES Customer(Customer_SSN),
     FOREIGN KEY (Robot_Serial_Number) REFERENCES Robot(Robot_Serial_Number),
     PRIMARY KEY(Rental_Number)
