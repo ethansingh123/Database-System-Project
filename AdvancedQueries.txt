@@ -1,0 +1,61 @@
+-- Q10) Provide a list of customer names, along with the total combined number of all robots they have rented out. 
+SELECT P.First_Name, P.Last_Name, COUNT(Rental_Number) AS NumberOfRobotRentals 
+FROM Person AS P 
+JOIN Customer AS C ON P.SSN = C.Customer_SSN 
+JOIN Rental_Order AS RO ON C.Customer_SSN = RO.Customer_SSN 
+GROUP BY C.Customer_SSN, P.First_Name, P.Last_Name; 
+
+ 
+
+-- Q11) Provide a list of customer names and email addresses for customers who have rented more robots than the average customer. 
+SELECT P.First_Name, P.Last_Name, P.Email  
+FROM Person AS P  
+JOIN Customer AS C ON P.SSN = C.Customer_SSN  
+JOIN Rental_Order AS RO ON C.Customer_SSN = RO.Customer_SSN  
+GROUP BY C.Customer_SSN, P.First_Name, P.Last_Name, P.Email 
+HAVING COUNT(RO.Rental_Number) > ( 
+SELECT AVG(rc)  
+FROM ( 
+SELECT COUNT(Rental_Number) AS rc  
+FROM Rental_Order  
+GROUP BY Customer_SSN 
+) 	 
+); 
+
+ 
+
+ 
+
+-- Q12) Provide a list of the robots in the database and associated total copies rented to customers, sorted from 
+the robot that has been rented the most to the robot that has been rented the least. 
+SELECT RO.Robot_Serial_Number, COUNT(RO.Rental_Number)  
+FROM Rental_Order AS RO  
+GROUP BY Ro.Robot_Serial_Number 
+ORDER BY COUNT(Ro.Rental_Number) DESC; 
+
+ 
+
+-- Q13) Provide a list of the driverless cars in the database and the total number of miles driven, sorted from the 
+ones that have delivered the highest number of robots to the ones delivered the lowest. 
+SELECT  
+    dc.DC_Serial_Number, 
+    dc.License_Plate, 
+    SUM(c.Facility_Distance) AS Total_Miles_Driven, 
+    COUNT(ro.Robot_Serial_Number) AS Total_Robots_Delivered 
+FROM Driverless_Car AS dc 
+JOIN Rental_Order ro ON dc.DC_Serial_Number = ro.DC_Serial_Number 
+JOIN Customer c ON ro.Customer_SSN = c.Customer_SSN 
+GROUP BY dc.DC_Serial_Number,  dc.License_Plate 
+ORDER BY Total_Robots_Delivered DESC;  
+
+ 
+
+-- Q14) Find the most popular manufacturer in the database (i.e. the one who has had the most rented robots) 
+SELECT M.Manufacturer_Name 
+FROM Manufacturer AS M 
+JOIN Model AS MO ON M.Manufacturer_Name = MO.Manufacturer_Name 
+JOIN Robot AS R ON MO.Model_Number = R.Robot_Model_Number 
+JOIN Rental_Order AS RO ON R.Robot_Serial_Number = RO.Robot_Serial_Number 
+GROUP BY M.Manufacturer_Name 
+ORDER BY COUNT(RO.Rental_Number) DESC 
+LIMIT 1; 
