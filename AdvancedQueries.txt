@@ -69,3 +69,44 @@ FROM Rental_Order
 WHERE Robot_Serial_Number IS NOT NULL AND Check_Out_Date IS NOT NULL AND Return_Date IS NOT NULL
 GROUP BY Robot_Serial_Number
 ORDER BY Total_Rented_Days DESC;
+
+-- Q16) Find the names and phone numbers of customers who have rented out anything but the most demanded robot in the database
+SELECT DISTINCT
+    Person.First_Name,
+    Person.Last_Name,
+    Person.Phone_Number
+FROM Person
+JOIN Customer ON Person.SSN = Customer.Customer_SSN
+JOIN Rental_Order ON Customer.Customer_SSN = Rental_Order.Customer_SSN
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM Rental_Order AS R2
+    WHERE R2.Customer_SSN = Customer.Customer_SSN AND R2.Robot_Serial_Number = (
+        SELECT Robot_Serial_Number
+        FROM Rental_Order
+        WHERE Robot_Serial_Number IS NOT NULL
+        GROUP BY Robot_Serial_Number
+        ORDER BY COUNT(*) DESC
+        LIMIT 1
+        )
+);
+
+-- Q17) Provide a list of manufacturers who provide the robots rented out by customers who have rented more robots than the average customer
+SELECT DISTINCT Manufacturer.Manufacturer_Name
+FROM Manufacturer
+JOIN Model ON Manufacturer.Manufacturer_Name = Model.Manufacturer_Name
+JOIN Robot ON Model.Model_Number = Robot.Robot_Model_Number
+JOIN Rental_Order ON Robot.Robot_Serial_Number = Rental_Order.Robot_Serial_Number
+WHERE Rental_Order.Customer_SSN IN (
+    SELECT Customer_SSN
+    FROM Rental_Order
+    GROUP BY Customer_SSN
+    HAVING COUNT(*) > (
+        SELECT AVG(Rental_Count)
+        FROM (
+            SELECT COUNT(*) AS Rental_Count
+            FROM Rental_Order
+            GROUP BY Customer_SSN
+        )
+    )
+);
