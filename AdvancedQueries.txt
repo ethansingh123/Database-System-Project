@@ -59,3 +59,13 @@ JOIN Rental_Order AS RO ON R.Robot_Serial_Number = RO.Robot_Serial_Number
 GROUP BY M.Manufacturer_Name 
 ORDER BY COUNT(RO.Rental_Number) DESC 
 LIMIT 1; 
+
+-- Q15) Find the most used robots in the database, using the rented running time of the item to calculate, and provide the number of times the item has been rented out (ordered from highest running time to lowest)
+SELECT
+    Robot_Serial_Number,
+    SUM(julianday(Return_Date) - julianday(Check_Out_Date)) AS Total_Rented_Days,
+    COUNT(Rental_Number) AS Times_Rented
+FROM Rental_Order
+WHERE Robot_Serial_Number IS NOT NULL AND Check_Out_Date IS NOT NULL AND Return_Date IS NOT NULL
+GROUP BY Robot_Serial_Number
+ORDER BY Total_Rented_Days DESC;

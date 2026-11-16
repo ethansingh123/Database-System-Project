@@ -138,6 +138,7 @@ CREATE TABLE Person (
     Middle_Initial CHAR,
     Address VARCHAR(150),
     Email VARCHAR(50),
+    Phone_Number VARCHAR(15),
     PRIMARY KEY (SSN)
 );
 
