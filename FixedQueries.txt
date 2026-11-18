@@ -1,0 +1,29 @@
+-- Query 4: This Query returns the customer first name and last name along with the robot serial number of the robot they rented, for every order whose delivery was completed by the Driverless car with the serial number DC-009, and whose customer lives within a 10 miles radius of the facility associated with the driverless car.  
+SELECT DISTINCT 
+P.First_Name, 
+P.Last_Name, 
+R.Robot_Serial_Number 
+FROM Person AS P 
+JOIN Customer AS C 
+ON P.SSN = C.Customer_SSN 
+JOIN Rental_Order AS O 
+ON C.Customer_SSN = O.Customer_SSN 
+JOIN Robot AS R 
+ON O.Robot_Serial_Number = R.Robot_Serial_Number 
+JOIN Driverless_Car AS D 
+ON O.DC_Serial_Number_Dropoff = D.DC_Serial_Number 
+WHERE C.Facility_Distance <= 10 
+AND D.DC_Serial_Number = 'DC-009';
+
+-- Query 6: This Query returns the Customer SSN and the total number of robots they have rented of the customer who has rented the most robots. If multiple customers are tied for the highest number of rentals, all of them are included in the result. 
+SELECT Customer_SSN, COUNT(Robot_Serial_Number) AS Robot_Serial_Number_Count  
+FROM Rental_Order  
+GROUP BY Customer_SSN  
+HAVING COUNT(Robot_Serial_Number) = ( 
+SELECT MAX(Robot_Count) 
+FROM ( 
+SELECT COUNT(Robot_Serial_Number) AS Robot_Count 
+FROM Rental_Order 
+GROUP BY Customer_SSN 
+) 
+); 
